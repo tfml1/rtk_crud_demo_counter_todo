@@ -1,0 +1,1411 @@
+        react redux(not tlkt)
+
+  
+// import axios from "axios";
+// https://jsonplaceholder.typicode.com/users
+// in app.js-->> import RdxTlktDemo from "/src/redux-toolkit-demo/RdxTlktDemo";
+
+// // ------------RdxTlktDemo.js--------------------------------
+
+// //                            REDUX TOOLKIT
+
+// // redux is predictable state container for js
+// // redux can be used with anything like angular, vue or even js not just react
+// //redux helps to manage glogal state of ur app
+// // makes it easier to understand when, where, why n how state changing/updating n how will ur app logic behave on those changes
+// //redux toolkit is new official opinionated toolkit for redux develoment
+// // redux toolkit better than redux coz config is less complicated, redux needed lots of external packages to do something useful, requires too much boilerplate(repeating) code
+// // redux toolkit serves as abstraction over old redux , hides the difficult part making sure u  hab good developer experience
+// // redux or redux toolkit doesnt depend on any ui library to work but it can use it as we will see here
+// // redux toolkit (rtk) the state management library uses react as ui library,
+// // to directly use redux is difficult, for that we hab react-redux package
+// // which is official react binding library with redux
+// //  when to use redux, its a tradeoff bw short n long term productivity(redux adds more code in ur app and is more complicated than other state management like usecontext etx, also adds some indirection to ur code n adds restrictions to what u can n cant do)
+// // use when u have large no. of states n u need it in many places in ur app
+// // use when ur app state is updated frequently over time or the logic to update that state may be complex
+// // if ur app has medium to large size code ase n is worked over by many people
+// //
+// // (note, like usecontext or react query or react routerdom, this also wraps all components in a "provider" that links it to all components in ur project)
+// // // (also, rtk is very similer to usereducer hook in its working principal)
+
+// // npm install redux, redux-toolkit, react-redux (add dependencies)
+// //
+// // redux helps us avoide prop drilling i.e. sending a prop frm a parent to child to grandchild n so on
+// // instead we can store all the states in our app inside a "store"
+// // all the other components can access that store with "usesellector" and make changes via "usedispatch" hook and "actions" and "reducers"
+
+// // store- common store for all ur states
+// // reducers- objects with key value that acts as controllers that can add remove edit or basically make changes to the store data in states
+// // useSelector- it is the hook that can directly talk to the store, if anywhere a state/data is needed, the component will use this hook to ask the store for that data
+// // useDispatch- its the hook that is used whenever u wanna update delete etx in the store, usedispatch calls the specific "reducer" to complete that operation
+
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//          spread operator revision
+// //   //The spread operator (...) is used to expand an iterable
+// // // (like an array or string) into individual elements. It can be
+// // // used to make shallow copies of arrays, merge arrays, and new elements to an array etc.
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// (note, following programs done in redux, not redux toolkit, rtk frm line no- 1060  onwards )
+//---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// //          //---------------------------------------------------------------------//
+// //          //---------------------------------------------------------------------//
+// //
+// // consider a shop, the shopkeeper and some action taking place, like customer places some order, like buy a nw iteam or return something or some other task
+// // then the shopkeeperr will perform that action and generate a recete, the store tracks number of items in inventry,
+// // so the action,  the shopkeeper that does that action and the updation of quantity  are store-reducer-dispatch
+// // store holds the state of the app, action tells what happens and reducer takes the action and decides how to update the state based on action type
+// // so the global state of ur app stored in a single store as an object {} which will be managed by the redux store, like tracking number of iteams in the shop { numofiteam : 10 }
+// // and the only way to change the state is by dispatch and action, an obj that describes what happens { type : "iteam ordered" }
+// // to specify how react tree updated based on action, u write pure reducers
+// // pure reducers are basically pure functions that take previous state n action as input and returns new state    reducer-->> {prevstate,action}=>newstate
+// // like the shopkeeper takes iteam off the shelf, reduce the iteamcount  by 1, print a recete and gib u the iteam
+// /*
+//      const reducer=(state=initialstate, action)=>{
+//        switch(action.type){
+//          case ITEAMORDERED :
+//            return{
+//              numofiteam : state.numofiteam-1
+//            }
+//           }
+//          }
+// */
+
+// // so summery js emitts an action => which then taken by reducerthat handles that action n updates the current state=>now shop has new value of numofiteam=>which then returned to js  n rendered on screen if needed
+
+// //----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// // consider following syntax-->>
+
+// // (note, all in one file RdxTlktDemo.js but u should seperate in different components/modules)
+
+// // using "require" instead of import xxxxx frm yyyyy
+// const redux = require("redux"); // now we create store frm "redux"
+// const createStore = redux.createStore; // getting createstore method frm redux library
+
+// //       //----------------------------action-----------------------------------------//
+// // lets create action first, actions are the only way the app can interact with redux, (in addition, u also send a payload but that for later)
+// // actions are basically js objects with a type property passed in reducers
+// //
+// const ITEAMORDERED = "iteam ordered";
+// // maneging "string directlt may cuse some error so instead u can store it as a constant so it can easily be used as xxxxx.ITEAMORDERED"
+// const iteamorderedz = () => {
+//   return {
+//     type: ITEAMORDERED, //,
+//     quantity: 1, // actions can hab more than one property
+//   }; // obj closed
+// }; // iteanorderedz closed
+// // here, "iteanorderedz" is called action creator which is basically a function that returns an action object
+
+// //       //---------------------------------reducer------------------------------------//
+
+// // now lets create a reducer that takes in above action and specify how app's state changes based on the action sent to the store
+// // takes state n action as args       reducer-->> {prevstate,action}=>newstate
+// //
+// // we already have action "iteanorderedz", now lets define state, it has to be an object  with key value numofiteam : 10
+// const initialstate = {
+//   numofiteam: 10
+// };
+// // now we pass our initial state in the reducer
+// const reducer = (state = initialstate, action) => {
+//   switch (action.type) {
+//     case ITEAMORDERED:
+//       return {
+//         numofiteam: state.numofiteam - 1
+//       };
+//     default:
+//       return state; // for some action we havent accounted for, return the state as it is
+//   }
+// };
+// /*
+// note, state can hab more than one property such as
+// const initialstate={
+//                     numofiteam : 10
+//                     another property : 0
+//                    }
+// for that, we create copy of state object by using ... spread operator and then only update numofiteam, other property will remain unchanged
+// // inside reducer return-->>   return {
+//                                         ...state,
+//                                         numofiteam : state.numofiteam -1
+//                                       }
+// //   //The spread operator (...) is used to expand an iterable
+// // // (like an array or string) into individual elements. It can be
+// // // used to make shallow copies of arrays, merge arrays, and new elements to an array etc.
+//    */
+
+// //       //-----------------------------store----------------------------------------//
+
+// // there is only one store for our entire app
+// // redux store  has following responcibilities
+// // 1. it holds app states
+// // 2. it allows access to state via getstate method
+// // 3. it allws the state to be updated via dispatch(action)
+// // 4. it also allows our app to register listners through "subscrive" method subscribe(listners)
+// // subscribe method accepts a function as an args that is executed anytime the state in redux is changed
+// // 5. it also allows to unsubscribe to the store or handles unregistering of listners to the store by calling the function returned by subscribed(listeners)
+
+// // hold app state--
+// // we already have state decleared initialstate
+// // now we need to create a store to store this state, here we use "require" keyword (instead of usval import xxxx frm yyyy)
+// // (all this above on top of app)
+// // const redux = require("redux"); // now we create store frm "redux"
+// // const createStore = redux.createStore;
+
+// const store = createStore(reducer); // we pass reducer as parameter inside store that also gives it the state and action
+
+// // allow access to state via getstate method
+// console.log("initial state : ", store.getState()); // getstate bydefault accesses "state" of the app
+// // output in console-->>  {numofiteam: 10}
+
+// // allows our app to register "listners" through "subscribe" method subscribe(listners) that takes a clbk funct ()=>{}
+// // store.subscribe(()=>{console.log("updated state : ", store.getState())})
+// // this is the "listner", here, everytime the state updates, we console log the "updated state" by getstate method
+// // to unsubscrie by calling the function returned by subscribed(listeners), so we store subscribe in an unsubscribe constant that we can invoke() at the end to unsubscribe
+// const unsubscribe = store.subscribe(() => {
+//   console.log("updated state : ", store.getState()); // (subscribe called on every dispatch)
+// });
+
+// // allws the state to be updated via dispatch(action), it takes action as its parameter
+// store.dispatch(iteamorderedz());
+// store.dispatch(iteamorderedz());
+// store.dispatch(iteamorderedz());
+// // // u can directly provide an actionobj {type: ITEAMORDERED} directly in iteamorderedz({type: ITEAMORDERED}) if u want to but we have an action creator "iteamorderedz" which we invoke() inside dispatch which returns the action object to dispatch
+// // if u pass it directly in every dispatch method in several files n now u need to change something like add or rename a property, u will have to change on each of those dispatch
+
+// // now whenever we "dispatch" an "action" from "iteamorderedz"
+// // what we are basically doing is due to invoke() of actiontype clbk funct, it returns action "type: ITEAMORDERED" back to reducer funct that tries to match iteam.type by switch-case     case ITEAMORDERED:
+// // once it matches, it will update and return state value (numofiteam: state.numofiteam - 1), once the state is updated, the "listener"(state.subscribe) is called that console.log the updated state
+
+// /* console.log output-->>
+// initial state :
+//     {numofiteam: 10}
+// updated state :
+//     {numofiteam: 9}
+// updated state :
+//     {numofiteam: 8}
+// updated state :
+//     {numofiteam: 7}
+// */
+
+// // unsubscribe to any further changes to the store
+// unsubscribe(); // after this, no dispatch console log can be printed
+
+// -----------prev code without comments--------------------------------------------------------
+
+// const redux = require("redux");
+// const createStore = redux.createStore;
+
+// const ITEAMORDERED = "iteam ordered";
+// const iteamorderedz = () => {
+//   return {
+//     type: ITEAMORDERED,
+//     quantity: 1,
+//   }; // obj closed
+// };
+
+// const initialstate = {
+//   numofiteam: 10
+// };
+
+// const reducer = (state = initialstate, action) => {
+//   switch (action.type) {
+//     case ITEAMORDERED:
+//       return {
+//         numofiteam: state.numofiteam - 1
+//       };
+//     default:
+//       return state; // for some action we havent accounted for, return the state as it is
+//   }
+// };
+
+// const store = createStore(reducer);
+// console.log("initial state : ", store.getState());
+
+// const unsubscribe = store.subscribe(() => { // (subscribe called on every dispatch)
+//   console.log("updated state : ", store.getState());
+// });
+
+// store.dispatch(iteamorderedz());
+// store.dispatch(iteamorderedz());
+// store.dispatch(iteamorderedz());
+
+// unsubscribe();
+
+// //---------------------------------------------------------------------------------------------------------------------------------------
+//         can refer for binding reducer functions on youtube->codevolution->rdxtlkt-> bind action creators, not really a necessary topic
+// //---------------------------------------------------------------------------------------------------------------------------------------
+
+const RdxTlktDemo = () => {
+  return (
+    <>
+      <div style={{ color: "yellow", backgroundColor: "red" }}>
+        RdxTlktDemo test
+      </div>
+      <li>create a store</li>
+      <li>create initial state and the reducer</li>
+      <li>define ur action n action creators</li>
+      <li>subscribe to the store</li>
+      <li>dispatch some action by actioncreator to update the store</li>
+      <li>finally, unsubscribe to further changes</li>
+      <li></li>
+    </>
+  );
+};
+export default RdxTlktDemo;
+
+
+// // // --------------------------------------------------------------------------------------------------------------------------------------
+// // continuing the shop example, each morning, the shop is restoked with new iteam
+// // so lets create a new action "iteam restoked" ITEAMRESTOCKED
+
+// const redux = require("redux");
+// const createStore = redux.createStore;
+
+// const ITEAMORDERED = "iteam ordered";
+// const ITEAMRESTOCKED = "iteam restocked"; // new action, now use this to define a new action creator "iteamrestockedz"
+
+// const iteamorderedz = () => {
+//   return {
+//     type: ITEAMORDERED,
+//     quantity: 1
+//   }; // obj closed
+// };
+
+// // new action creator
+// const iteamrestockedz = (qty = 1) => {
+//   // passing qty payload args
+//   return {
+//     type: ITEAMRESTOCKED,
+//     // quantity: qty // in redux, its standard to call quantity as "payload" not compulsary but preffered standard
+//     payload: qty
+//   };
+// }; // now implement this action type in reducer so it can handle it
+
+// const initialstate = {
+//   numofiteam: 10
+// };
+
+// const reducer = (state = initialstate, action) => {
+//   switch (action.type) {
+//     case ITEAMORDERED:
+//       return {
+//         ...state,
+//         numofiteam: state.numofiteam - 1
+//       };
+//     case ITEAMRESTOCKED:
+//       return {
+//         ...state,
+//         // numofiteam: state.numofiteam + action.quantity // action.quantity will allow us to restock with the quantity we passed in as payload when dispatching the action, lets rename "quantity" with "payload"
+//         numofiteam: state.numofiteam + action.payload
+//       };
+//     default:
+//       return state; // for some action we havent accounted for, return the state as it is
+//   } // now store.dispatch(iteamrestockedz(5)); // payload to update iteam by 5
+// };
+
+// const store = createStore(reducer);
+// console.log("initial state : ", store.getState());
+
+// const unsubscribe = store.subscribe(() => {
+//   console.log("updated state : ", store.getState());
+// });  // (subscribe called on every dispatch)
+
+// store.dispatch(iteamorderedz());
+// store.dispatch(iteamorderedz());
+// store.dispatch(iteamorderedz());
+// // sending payload to update state via dispatch
+// store.dispatch(iteamrestockedz(5)); // payload to update iteam by 5
+
+// unsubscribe();
+
+// // --------------------------------------------------------------------------------------------------------------------------------------
+// continuing the shop example, suppose shop sells multiple kinds of iteams like iteam1, iteam2....
+// first method is to do it by following way in a single reducer by creating all methods n objects like iteam1orderedz, iteam2orderedz, iteam1restockedz, iteam2restockedz etc n passing to common reducer funct
+
+// const redux = require("redux");
+// const createStore = redux.createStore;
+
+// const ITEAM1ORDERED = "iteam 1 ordered";
+// const ITEAM1RESTOCKED = "iteam 1 restocked";
+
+// const ITEAM2ORDERED = "iteam 2 ordered";
+// const ITEAM2RESTOCKED = "iteam 2 restocked";
+
+// const iteam1orderedz = (qty = 1) => {
+//   return {
+//     type: ITEAM1ORDERED,
+//     payload: qty
+//   }; // obj closed
+// };
+// const iteam2orderedz = (qty = 1) => {
+//   return {
+//     type: ITEAM2ORDERED,
+//     payload: qty
+//   }; // obj closed
+// };
+
+//  const iteam1restockedz = (qty = 1) => {
+//    return {
+//     type: ITEAM1RESTOCKED,
+//     payload: qty
+//   };
+// };
+// const iteam2restockedz = (qty = 1) => {
+//   return {
+//     type: ITEAM2RESTOCKED,
+//     payload: qty
+//   };
+// };
+
+// const initialstate = {
+//   numofiteam1: 10,
+//   numofiteam2: 20 // second iteam added to state
+// };
+
+// const reducer = (state = initialstate, action) => {
+//   switch (action.type) {
+//     case ITEAM1ORDERED:
+//       return {
+//         ...state,
+//         numofiteam1: state.numofiteam1 - action.payload
+//       };
+//     case ITEAM1RESTOCKED:
+//       return {
+//         ...state,
+//         numofiteam1: state.numofiteam1 + action.payload
+//       };
+//     case ITEAM2ORDERED:
+//       return {
+//         ...state,
+//         numofiteam2: state.numofiteam2 - action.payload
+//       };
+//     case ITEAM2RESTOCKED:
+//       return {
+//         ...state,
+//         numofiteam2: state.numofiteam2 + action.payload
+//       };
+//     default:
+//       return state;
+//   }
+// };
+
+// const store = createStore(reducer);
+// console.log("initial state : ", store.getState());
+
+// const unsubscribe = store.subscribe(() => {
+//   console.log("updated state : ", store.getState()); // (subscribe called on every dispatch)
+// });
+
+// store.dispatch(iteam1orderedz(3));
+// store.dispatch(iteam1orderedz(2));
+// store.dispatch(iteam1orderedz(1));
+// store.dispatch(iteam1restockedz(10)); // payload
+// store.dispatch(iteam2orderedz(6));
+// store.dispatch(iteam2orderedz(3));
+// store.dispatch(iteam2orderedz(4));
+// store.dispatch(iteam2restockedz(30));
+
+// unsubscribe();
+/* console.log output-->>
+initial state :  
+    {numofiteam1: 10, numofiteam2: 20}
+updated state :  
+    {numofiteam1: 7, numofiteam2: 20}
+updated state :  
+    {numofiteam1: 5, numofiteam2: 20}
+updated state :  
+    {numofiteam1: 4, numofiteam2: 20}
+updated state :  
+    {numofiteam1: 14, numofiteam2: 20}
+updated state :  
+    {numofiteam1: 14, numofiteam2: 14}
+updated state :  
+    {numofiteam1: 14, numofiteam2: 11}
+updated state :  
+    {numofiteam1: 14, numofiteam2: 7}
+updated state :  
+    {numofiteam1: 14, numofiteam2: 37}
+*/
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// previously, we saw iteam1 and iteam2 using same reducer, but as the program grows, the code will become bulkey, difficult to debug n manage n keep track of
+// for that we create seperate states and reducers for reac iteams n bind those reducers togather to pass in store(as store only takes in one reducer)
+
+// const redux = require("redux");
+// const createStore = redux.createStore;
+// const combineReducers = redux.combineReducers; // function to combine multiple reducers in one
+
+// const ITEAM1ORDERED = "iteam 1 ordered";
+// const ITEAM1RESTOCKED = "iteam 1 restocked";
+
+// const ITEAM2ORDERED = "iteam 2 ordered";
+// const ITEAM2RESTOCKED = "iteam 2 restocked";
+
+// const iteam1orderedz = (qty = 1) => {
+//   return {
+//     type: ITEAM1ORDERED,
+//     payload: qty
+//   }; // obj closed
+// };
+// const iteam2orderedz = (qty = 1) => {
+//   return {
+//     type: ITEAM2ORDERED,
+//     payload: qty
+//   }; // obj closed
+// };
+
+// const iteam1restockedz = (qty = 1) => {
+//   return {
+//     type: ITEAM1RESTOCKED,
+//     payload: qty
+//   };
+// };
+// const iteam2restockedz = (qty = 1) => {
+//   return {
+//     type: ITEAM2RESTOCKED,
+//     payload: qty
+//   };
+// };
+
+// // creating seperate state for seperate reducers
+// const initialstate1 = {
+//   numofiteam1: 10
+// };
+// const initialstate2 = {
+//   numofiteam2: 20 // second iteam added to state
+// };
+
+// const reducer1 = (state = initialstate1, action) => {
+//   switch (action.type) {
+//     case ITEAM1ORDERED:
+//       return {
+//         ...state,
+//         numofiteam1: state.numofiteam1 - action.payload
+//       };
+//     case ITEAM1RESTOCKED:
+//       return {
+//         ...state,
+//         numofiteam1: state.numofiteam1 + action.payload
+//       };
+
+//     default:
+//       return state;
+//   }
+// };
+// const reducer2 = (state = initialstate2, action) => {
+//   switch (action.type) {
+//     case ITEAM2ORDERED:
+//       return {
+//         ...state,
+//         numofiteam2: state.numofiteam2 - action.payload
+//       };
+//     case ITEAM2RESTOCKED:
+//       return {
+//         ...state,
+//         numofiteam2: state.numofiteam2 + action.payload
+//       };
+//     default:
+//       return state;
+//   }
+// };
+// // now both states and their reducers seperated, the store only takes one reducer and we have two
+// // so we "combine" those two reducers and pass it to store
+// // redux provides method called combinereducers that combines multiple reducers into a single reducer which can then be passed to createstore method
+// // const combinereducers=redux.combineReducers
+
+// const rootreducer = combineReducers({
+//   // this createreducer method accepts an obj{} with each key value pair as  reducers
+//   iteam1rdc: reducer1,
+//   iteam2rdc: reducer2
+// });
+// const store = createStore(rootreducer);
+// console.log("initial state : ", store.getState());
+
+// const unsubscribe = store.subscribe(() => {
+//   console.log("updated state : ", store.getState()); // (subscribe called on every dispatch)
+// });
+
+// store.dispatch(iteam1orderedz(3));
+// store.dispatch(iteam1orderedz(2));
+// store.dispatch(iteam1orderedz(1));
+// store.dispatch(iteam1restockedz(10)); // payload
+// store.dispatch(iteam2orderedz(6));
+// store.dispatch(iteam2orderedz(3));
+// store.dispatch(iteam2orderedz(4));
+// store.dispatch(iteam2restockedz(30));
+
+// unsubscribe();
+
+/* now working, console.log output-->>
+initial state :  
+{iteam1rdc: Object, iteam2rdc: Object}
+iteam1rdc: Object
+    numofiteam1: 10
+iteam2rdc: Object
+            numofiteam2: 20
+updated state :  
+{iteam1rdc: Object, iteam2rdc: Object}
+iteam1rdc: Object
+    numofiteam1: 7
+iteam2rdc: Object
+            numofiteam2: 20
+updated state :  
+{iteam1rdc: Object, iteam2rdc: Object}
+iteam1rdc: Object
+    numofiteam1: 5
+iteam2rdc: Object
+            numofiteam2: 20
+updated state :  
+{iteam1rdc: Object, iteam2rdc: Object}
+iteam1rdc: Object
+    numofiteam1: 4
+iteam2rdc: Object
+            numofiteam2: 20
+updated state :  
+{iteam1rdc: Object, iteam2rdc: Object}
+iteam1rdc: Object
+    numofiteam1: 14
+iteam2rdc: Object
+            numofiteam2: 20
+updated state :  
+{iteam1rdc: Object, iteam2rdc: Object}
+iteam1rdc: Object
+    numofiteam1: 14
+iteam2rdc: Object
+            numofiteam2: 14
+updated state :  
+{iteam1rdc: Object, iteam2rdc: Object}
+iteam1rdc: Object
+    numofiteam1: 14
+iteam2rdc: Object
+            numofiteam2: 11
+updated state :  
+{iteam1rdc: Object, iteam2rdc: Object}
+iteam1rdc: Object
+    numofiteam1: 14
+iteam2rdc: Object
+            numofiteam2: 7
+updated state :  
+{iteam1rdc: Object, iteam2rdc: Object}
+iteam1rdc: Object
+    numofiteam1: 14
+iteam2rdc: Object
+            numofiteam2: 37
+
+    // now working, but note that the output has  iteam1rdc and iteam2rdc  globalstateobject
+// it basically means if u wanna access  numofiteam1, u have to specify state.iteamrdc.numofiteam1
+(// also, what u must know is that when we dispatch an action, both reducers get that but only one acts on it)
+            */
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// //         IMMER
+// //        -------
+
+// // its a library that helps while working with redux
+// // in the shop and iteam program, our  state object was simple enough(  const initialstate1 = {numofiteam1: 10, xxxx:"yyyy"} simple objrct with series of key:value pairs) that we were
+// // able to update in reducers easily enough where we ...spread n created a copy of the state and only update one state parameter since state is immutable parameter
+// //         return {
+// //         ...state,
+// //         numofiteam1: state.numofiteam1 - action.payload
+// //       };
+// // but suppose we have a complicated nested state(obj under obj), in such condition, updating the state becomes diddicult
+
+// /*
+// const initialstate={
+// name:"abcd",
+// address:{ // nested object, complex state
+//   street:"123 street",
+//   city:"xxxxx",
+//   post:"yyyyy"
+// } // address closed
+// }
+
+// // return{
+// //         ...state, // to ensure "name" remain unaffected, we ...spread state obj
+// //         address:{
+// //          ...state.address, // // to ensure "city" and "post" remain unaffected, we ...spread state.address obj
+// //          street:action.payload // the whole process becomes leanthy andcomplicated like this
+// //         }
+// //       }
+//   // instead of doing like above, lets use immer produce method,
+//   first args is state, second arg is a function that takes "draft" copy of the state
+//   and it can directly access the street by state.address.street acting like a mutable operation,
+//     we updating the state directly but under the hood, immer translates the code like above return
+//       return produce(state, (draft)=>{draft.address.street=action.payload})
+
+// // as we can see its difficult to keep track to ensure modifying correct parameter in state obj,
+// // to simplify this complicated step, we use immer library that worksvery well with redux
+// // // so-> npm install immer
+// // // then-> const produce=require("immer").produce
+// */
+// // consider the following state-->
+
+// const produce = require("immer").produce; // access produce method frm immer  library
+
+// const initialstate = {
+//   name: "abcd",
+//   address: {
+//     // nested object, complex state
+//     street: "123 street",
+//     city: "xxxxx",
+//     post: "yyyyy"
+//   } // address closed
+// }; // innerstate closed
+
+// // now suppose we have to change the street
+// // first step, we define the const for action type
+// const STREETUPDATE = "street update";
+
+// // 2nd step we define action creator that returns the action obj
+// const updatestreet = (streetpayload) => {
+//   return {
+//     type: STREETUPDATE,
+//     payload: streetpayload
+//   };
+// };
+
+// // 3rd step we define the reducer to handle this action
+// const reducer = (state = initialstate, action) => {
+//   switch (action.type) {
+//     case STREETUPDATE:
+//       // return{
+//       //   ...state, // to ensure "name" remain unaffected, we ...spread state obj
+//       //   address:{
+//       //    ...state.address, // // to ensure "city" and "post" remain unaffected, we ...spread state.address obj
+//       //    street:action.payload // the whole process becomes leanthy andcomplicated like this
+//       //   } // as we can see its difficult to keep track to ensure modifying correct parameter in state obj, to simplify this complicated step, we use immer library
+//       // }// so npm install immer then const produce=require("immer").produce
+//       // instead of doing like above, lets use immer produce method, first args is state, second arg is a function that takes "draft" copy of the state and it can directly access the street by state.address.street acting like a mutable operation, we updating the state directly but under the hood, immer translates the code like above
+//       return produce(state, (draft) => {
+//         draft.address.street = action.payload;
+//       });
+
+//     default:
+//       return state;
+//   }
+// };
+
+// // finally, we create the store and dispatch the action tracking the initial n updated state
+// const redux = require("redux");
+// //const createStore = redux.createStore; // can doit directly instead as in next line
+// const store = redux.createStore(reducer); // create store
+// console.log("initial state ", store.getState()); // log initial state
+
+// const unsubscribe = store.subscribe(() => {
+//   // subscribe to the store
+//   console.log("updated state : ", store.getState()); // log updated store(subscribe called on every dispatch)
+// });
+
+// store.dispatch(updatestreet("456 street")); // dispatch an action to update the street
+
+// unsubscribe();
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+// //------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// //             MIDDLEWARE
+// //            ------------
+
+// // it is the suggested way to extend redux functionality, if u want redux with extra features, middleware is the way to go
+// // it basically provides a third party extention point bw dispatch an action n the moment it reaches the reducer
+// // we use middleware for various tasks like logging, crash reporting, performing async task etx
+
+// // Import middleware, pass it as args to create store and pass in the middleware as applyMiddleware(xxxx) method
+
+// // lets apply redux logger middleware inour shop n iteams program
+// // it logs all the info related to redux in ur app
+// // npm install redux-logger
+// //now we need to create a logger for our app by import {createLogger} from "redux-logger"
+// // or we use const reduxLogger=require("redux-logger") and const logger=reduxLogger.createLogger()
+// // now, to apply this middleware, we need redux.applyMiddleware(const applyMiddleware=redux.applyMiddleware) before creating logger
+// // now pass it in createstore method as 2nd parameter applyMiddleware(logger) with logger as its parameter
+// // const store = createStore(rootreducer, applyMiddleware(logger))
+// // so in this program, "logger" is the middleware that we pass in using "applyMiddleware" method in the store
+
+// const redux = require("redux");
+// const createStore = redux.createStore;
+// const combineReducers = redux.combineReducers; // function to combine multiple reducers in one
+
+// const applyMiddleware = redux.applyMiddleware; // method to apply any kind of middleware already present in redux no npm install
+// // now pass it in createstore method as 2nd parameter
+// const reduxLogger = require("redux-logger"); // npm install redux logger
+// const logger = reduxLogger.createLogger(); // importing and creating a redux logger middleware
+
+// const ITEAM1ORDERED = "iteam 1 ordered";
+// const ITEAM1RESTOCKED = "iteam 1 restocked";
+
+// const ITEAM2ORDERED = "iteam 2 ordered";
+// const ITEAM2RESTOCKED = "iteam 2 restocked";
+
+// const iteam1orderedz = (qty = 1) => {
+//   return {
+//     type: ITEAM1ORDERED,
+//     payload: qty
+//   }; // obj closed
+// };
+// const iteam2orderedz = (qty = 1) => {
+//   return {
+//     type: ITEAM2ORDERED,
+//     payload: qty
+//   }; // obj closed
+// };
+
+// const iteam1restockedz = (qty = 1) => {
+//   return {
+//     type: ITEAM1RESTOCKED,
+//     payload: qty
+//   };
+// };
+// const iteam2restockedz = (qty = 1) => {
+//   return {
+//     type: ITEAM2RESTOCKED,
+//     payload: qty
+//   };
+// };
+
+// // creating seperate state for seperate reducers
+// const initialstate1 = {
+//   numofiteam1: 10
+// };
+// const initialstate2 = {
+//   numofiteam2: 20 // second iteam added to state
+// };
+
+// const reducer1 = (state = initialstate1, action) => {
+//   switch (action.type) {
+//     case ITEAM1ORDERED:
+//       return {
+//         ...state,
+//         numofiteam1: state.numofiteam1 - action.payload
+//       };
+//     case ITEAM1RESTOCKED:
+//       return {
+//         ...state,
+//         numofiteam1: state.numofiteam1 + action.payload
+//       };
+
+//     default:
+//       return state;
+//   }
+// };
+// const reducer2 = (state = initialstate2, action) => {
+//   switch (action.type) {
+//     case ITEAM2ORDERED:
+//       return {
+//         ...state,
+//         numofiteam2: state.numofiteam2 - action.payload
+//       };
+//     case ITEAM2RESTOCKED:
+//       return {
+//         ...state,
+//         numofiteam2: state.numofiteam2 + action.payload
+//       };
+//     default:
+//       return state;
+//   }
+// };
+
+// const rootreducer = combineReducers({
+//   // this createreducer method accepts an obj{} with each key value pair as  reducers
+//   iteam1rdc: reducer1,
+//   iteam2rdc: reducer2
+// });
+
+// //const store = createStore(rootreducer);
+// const store = createStore(rootreducer, applyMiddleware(logger)); // current we have only one middleware "logger" but u can pass in as many as ur app require
+
+// //
+// console.log("initial state : ", store.getState());
+
+// const unsubscribe = store.subscribe(() => {
+//   // console.log("updated state : ", store.getState()); // now we dont need this step coz logger logs all the changes in state
+// });
+
+// store.dispatch(iteam1orderedz(3));
+// store.dispatch(iteam1orderedz(2));
+// store.dispatch(iteam1orderedz(1));
+// store.dispatch(iteam1restockedz(10)); // payload
+// store.dispatch(iteam2orderedz(6));
+// store.dispatch(iteam2orderedz(3));
+// store.dispatch(iteam2orderedz(4));
+// store.dispatch(iteam2restockedz(30));
+
+// unsubscribe();
+
+/* console output-->>
+ 
+initial state :  
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action iteam 1 ordered @ 19:05:52.641 redux-logger.js:1:6043
+ prev state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action     
+Object { type: "iteam 1 ordered", payload: 3 }
+index.js:27:25
+ next state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action iteam 1 ordered @ 19:05:52.645 redux-logger.js:1:6043
+ prev state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action     
+Object { type: "iteam 1 ordered", payload: 2 }
+index.js:27:25
+ next state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action iteam 1 ordered @ 19:05:52.649 redux-logger.js:1:6043
+ prev state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action     
+Object { type: "iteam 1 ordered", payload: 1 }
+index.js:27:25
+ next state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action iteam 1 restocked @ 19:05:52.653 redux-logger.js:1:6043
+ prev state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action     
+Object { type: "iteam 1 restocked", payload: 10 }
+index.js:27:25
+ next state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action iteam 2 ordered @ 19:05:52.657 redux-logger.js:1:6043
+ prev state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action     
+Object { type: "iteam 2 ordered", payload: 6 }
+index.js:27:25
+ next state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action iteam 2 ordered @ 19:05:52.665 redux-logger.js:1:6043
+ prev state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action     
+Object { type: "iteam 2 ordered", payload: 3 }
+index.js:27:25
+ next state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action iteam 2 ordered @ 19:05:52.669 redux-logger.js:1:6043
+ prev state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action     
+Object { type: "iteam 2 ordered", payload: 4 }
+index.js:27:25
+ next state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action iteam 2 restocked @ 19:05:52.672 redux-logger.js:1:6043
+ prev state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+ action     
+Object { type: "iteam 2 restocked", payload: 30 }
+index.js:27:25
+ next state 
+Object { iteam1rdc: {…}, iteam2rdc: {…} }
+index.js:27:25
+*/
+
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+// //------------------------------------------------------------------------------------------------------------------------------------------------------
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+// //------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// //                        ASYNC ACTIONS(FETCHING DATA FROM API)
+// //                       ---------------------------------------
+
+// // till now, we saw synchronousactions, as soon as action dispatched, state immideatly updated
+// // but for async operation like fetching daata, we need async action middleware
+
+// // following program fetch data of a list of user frm api endpoint json placeholder n store it in state
+
+// // state-->>
+// // typically, when fetching data, we need 3 properties, is loading, the data [] and error
+// // state={loading:true, data:[], error:""}
+
+// // action-->>
+// // we have 3 actions-> First is list of users requested frm api endpoint, (FETCHUSERSREQUESTED)
+// // 2nd n 3rd action is dependent on 1st action, Second action is for when data fetched successfully (FETCHUSERSUCCESS)
+// // Third action is for error fetching data(FETCHUSERFAILED)
+
+// // reducer-->>
+// // if action type FETCHUSERREQUESTED, loading is set to true,
+// // for FETCHUSERSUCCESS, loading:false and users:data(frm api)
+// // for FETCHUSERFAILED, loading:false and error:error(frm api)
+
+// const redux = require("redux");
+// const applyMiddleware = redux.applyMiddleware;
+// const thunkMiddleware = require("redux-thunk").default;
+
+// // creating state
+// const initialstate = { loading: true, data: [], error: "" };
+
+// // declear actions, first declear const for the actions
+// const FETCHUSERSREQUESTED = "FETCHUSERSREQUESTED";
+// const FETCHUSERSUCCESS = "FETCHUSERSUCCESS";
+// const FETCHUSERFAILED = "FETCHUSERFAILED";
+
+// // now declear action type
+// const fetchuserrequested = () => {
+//   return {
+//     type: FETCHUSERSREQUESTED
+//   };
+// };
+// const fetchusersuccess = (users) => {
+//   return {
+//     type: FETCHUSERSUCCESS,
+//     payload: users
+//   };
+// };
+// const fetchuserfailed = (error) => {
+//   return {
+//     type: FETCHUSERFAILED,
+//     payload: error
+//   };
+// };
+
+// // creating the reducer funct
+// const reducer = (state = initialstate, action) => {
+//   switch (action.type) {
+//     case FETCHUSERSREQUESTED:
+//       return {
+//         ...state,
+//         loading: true
+//       };
+//     case FETCHUSERSUCCESS:
+//       return {
+//         loading: false,
+//         users: action.payload,
+//         error: ""
+//       };
+//     case FETCHUSERFAILED:
+//       return {
+//         loading: false,
+//         users: [],
+//         error: action.payload
+//       };
+//     default:
+//       return state;
+//   }
+// };
+
+// // creating async action creator for axios fetch, generally, action creator returns an action,  this returns a function instead of object due to thunk middleware ability
+// const fetchusers = () => {
+//   return function (dispatch) {
+//     //(this funct doesnt hab to be pure funct, its allowed to hab sideeffects like async api call, thisfunct can dispatch actions like one we seen b4 as it recieves dispatch as args)
+//     dispatch(fetchuserrequested()); // this action creator will set loading to true
+//     axios
+//       .get("https://jsonplaceholder.typicode.com/users")
+//       .then((res) => {
+//         const users = res.data.map((user) => user.name); // only taking user name of users for demo
+//         dispatch(fetchusersuccess(users)); // users is the payload here
+//       })
+//       .catch((error) => {
+//         dispatch(fetchuserfailed(error.message)); // error.message is the payload here(error.message)})
+//       });
+//   };
+// };
+// // passing thunkmidlwre in store
+// const store = redux.createStore(reducer, applyMiddleware(thunkMiddleware));
+
+// // we also define redux thunk middleware which is standard way in redux to deal with async actions
+// // npm install redux thunk,
+
+// // finally we subscribe to store n dispatch the async funct
+// const unsubscribe = store.subscribe(() => {
+//   console.log("updated state : ", store.getState()); // now we dont need this step coz logger logs all the changes in state
+// });
+// store.dispatch(fetchusers());
+
+// unsubscribe();
+
+// /* console log output-->>
+// updated state :
+// {loading: true, data: Array(0), error: ""}
+// loading: true
+// data: Array(0)
+//         error: ""
+// //  no error but data: Array(0) data not recived means only FETCHUSERSREQUESTED executing, FETCHUSERSUCCESS not executing, maybe try with some other api later when needed
+// */
+/*
+step by step working of above code 
+    Initial State: The state is initialized with loading set to true, an empty data array, and an empty error message.
+    Action Types: Three action types are declared for requesting users, successful fetching, and fetch failure.
+    Action Creators: Functions like fetchuserrequested, fetchusersuccess, and fetchuserfailed are created to return action objects.
+    Reducer: The reducer handles these actions and updates the state accordingly. For FETCHUSERSREQUESTED, loading becomes true. For FETCHUSERSUCCESS, loading becomes false, and user data is added. For FETCHUSERFAILED, loading becomes false, and an error is set.
+    Redux Store Setup: The Redux store is created with the reducer and the Thunk middleware applied.
+    Async Action Creator: fetchusers is an asynchronous action creator. It returns a function that receives dispatch. It dispatches fetchuserrequested, makes an API call, and dispatches either fetchusersuccess or fetchuserfailed based on the API response.
+    API Call: The action creator uses Axios to fetch user data from an API.
+    Middleware: Redux Thunk middleware enables dispatching functions, not just plain objects.
+    Subscription: A subscription is set up to log state changes.
+    Dispatch Action: The async action fetchusers is dispatched, initiating the API call and updating the state.
+*/
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// (till now, we learned abt redux, nof frm this point, we learn abt redux toolkit)
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+//-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+//                       REDUX TOOLKIT
+//                      ---------------
+
+/*
+Redux-ToolKit)
+Problems faced in Redux:
+
+Redux Toolkit was created to solve these three common problems that we face in Redux.
+
+    Too much code to configure the store.
+    Writing too much boilerplate code to dispatch actions and store the data in the reducer.
+    Extra packages like Redux-Thunk and Redux-Saga for doing asynchronous actions.
+
+Benefits of Redux Toolkit(RTK):
+
+    Easier state management as compared to Redux
+    Boilerplate code for the majority of functions
+    Official recommended SOPE library
+    Wrapper functions are provided which reduce lines of code
+
+Important function provided by Redux Toolkit:
+
+    The createStore function in basic Redux is wrapped by configureStore function which automatically provides with middlewares and enhancers.
+    Classic reducer is replaced by createReducer function which makes the code shorter and simpler to understand.
+    The createAction() utility that returns an action creator function.
+    Redux createSlice() function that comes in handy to replace create action and create Reducer functions with a single function.
+    Redux createAsyncThunk() that takes Redux strings as arguments and returns a Promise.
+    Redux createEntityAdapter() utility that helps to perform CRUD operations
+*/
+
+
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+indexx.js
+
+// import store from "/store";
+// import { iteam1Actions } from "/iteam1Slice";
+
+const store = require("/store");
+const iteam1Actions = require("/iteam1Slice");
+
+console.log("initial state ", store.getState());
+
+const unsubscribe = store.subscribe(() => {
+  console.log("updated state : ", store.getState()); // (subscribe called on every dispatch)
+});
+
+store.dispatch(iteam1Actions.ordered());
+store.dispatch(iteam1Actions.ordered());
+store.dispatch(iteam1Actions.ordered());
+store.dispatch(iteam1Actions.restoked(5));
+unsubscribe();
+
+------------------------------------------------------------------------------------------------------------------------------
+
+iteam1slice.js
+
+// in rtk, its recommended to group togather the reducer logic and actions in a single feature
+// project structure should be like following, createan "app" folder that contains our store.js and indexx.js file
+// create another folder in same (directry where app exist) called "features"
+// after that all the iteams like "iteam1", "iteam2" etc should have their own folder inside features
+// and inside iteam1 folder, create iteam1Slice.js file, same for iteam2Slice, "Slice" should be suffix for each slice file
+// the entire application states must be split into slices and managed indivisually
+// so:--  app folder-->store.js and indexx.js file
+//        features folder -->iteam1/2 folfer--> iteam1/2Slice.js file
+// this slice effectively takes care of defining action type const, an action obj, the action creators and the switch statements inside the reducers and handling immutable states updates by inbuilt immer library
+//
+
+//-------------------------------------------------------------------------------------------
+// first we import "createSlice" method from "redux-toolkit"
+// import { createSlice } from "redux-toolkit";
+const createSlice = require("@reduxjs/toolkit").createSlice;
+// now we invoke() createslice({}) n assign it to a constant iteam1slice that accepts an obj{} as arg
+// in this object we specify 3 properties, name for the slice(name:"iteam1"),
+// second property is the initial state for this slice, (obj that can hab multiple parameters like no.of iteams, color, cost etc, in our example here, initial state is an obj with key value numofiteam:10)
+// third is the reducer funct, reducer funct takes an obj{}, within the obj we specify indivisualstate transition
+// create slice also generate action creators bydefault with the same "name" "iteam1" inside the reducers
+// "immer" library working in background in rtk createslice bydefault so we can directly mutate the state
+
+const initialState = {
+  numofiteam: 10
+};
+
+const iteam1Slice = createSlice({
+  name: "iteam1",
+  initialState: initialState, // initial state as key and value, value taken frm obj created above
+  reducers: {
+    ordered: (state, action) => {
+      // "immer" library working in background in rtk createslice bydefault so we can directly mutate the state
+      state.numofiteam--;
+    },
+    restoked: (state, action) => {
+      state.numofiteam += action.payload;
+    }
+    // create slice also generate action creators bydefault with the same "name" "iteam1" inside the reducers
+    // apart frm action creators, it also provides the main reducer funct that we can provide to our redux store
+  }
+});
+
+// // lets export reducers as defaut export n actions as named export
+// const iteam1Reducer = iteam1Slice.reducers;
+// export default iteam1Reducer;
+// //module.exports.iteam1Actions=iteam1Slice.action
+// const iteam1Actions = iteam1Slice.action;
+// export { iteam1Actions }; // now lets connect our slice to redux store n dispatch some actions
+
+module.exports = iteam1Slice.reducer;
+module.exports.iteam1Actions = iteam1Slice.action;
+
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+// this slice effectively takes care of defining action type const, an action obj, the action creators and the switch statements inside the reducers and handling immutable states updates by inbuilt immer library
+// we can see rtk reduced lots of rewriting repeating boilerplate code and avoided use of external library immer
+//--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+// in redux, we were doing-->>
+
+// const ITEAM1ORDERED = "iteam 1 ordered";         // defining action type const
+// const ITEAM1RESTOCKED = "iteam 1 restocked";
+
+// const iteam1orderedz = (qty = 1) => {            // return action obj and action creator,
+//   return {
+//     type: ITEAM1ORDERED,
+//     payload: qty
+//   }; // obj closed
+// };
+// const iteam1restockedz = (qty = 1) => {
+//   return {
+//     type: ITEAM1RESTOCKED,
+//     payload: qty
+//   };
+// };
+
+// const reducer1 = (state = initialstate1, action) => {
+//   switch (action.type) {                                // switch statements inside reducers
+//     case ITEAM1ORDERED:
+//       return {
+//         ...state,
+//         numofiteam1: state.numofiteam1 - action.payload
+//       };
+//     case ITEAM1RESTOCKED:
+//       return {
+//         ...state,
+//         numofiteam1: state.numofiteam1 + action.payload
+//       };
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+store.js
+
+// in redux, we used "createstore" method, in rtk, we use "configurestore" instead
+// import { configureStore } from "redux-toolkit";
+// import iteam1Reducer from "/iteam1Slice";
+import iteam1Reducer from "/iteam1Slice";
+const configureStore = require("@reduxjs/toolkit").configureStore;
+// assign configstore to a const store, it accepts an {obj} as arg
+const store = configureStore({
+  reducer: {
+    iteam1: iteam1Reducer //(similer to combinereducer in redux, can add multiple reducers frm multiple slices )
+  }
+});
+
+// the store is now complete, export it to indexx.js to dispatch some actions
+
+//export default store;
+export default store;
+
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////\
+new program in rdx tlkt
+
+// store.js//
+
+import { configureStore } from "@reduxjs/toolkit";
+import counterReducer from "../features/counter/counterSlice";
+
+export const store = configureStore({
+  reducer: { // this reducer can have multiple reducers for mutiple state slices, common store for all states, thats why we create store first
+    counter: counterReducer // now this is available to whole app by provider in index.js
+  }
+});
+
+// now lets create a Counter.js component in features/counter folder that we use in app.js  jsx block   component tag <Counter> that will display our ui- buttons for incriment, decrement and count value
+
+
+//index.js//
+
+import { StrictMode } from "react";
+import { createRoot } from "react-dom/client";
+import App from "./App";
+
+import { store } from "./app/store";
+import { Provider } from "react-redux";
+// provider wrapper sends "store" attribute that takes in "store" to all wrapped elements in this case the app.js
+
+const rootElement = document.getElementById("root");
+const root = createRoot(rootElement);
+
+root.render(
+  <StrictMode>
+    <Provider store={store}>
+      <App />
+    </Provider>
+  </StrictMode>
+);
+
+// now goto index.js n import store and "provider"....
+// the point is to wrap all elements in redux provider wrapper like usecontext or query hook so all the elements can get store data frm provider wrapper
+
+
+// counterslice.js//
+
+import { createSlice } from "@reduxjs/toolkit";
+
+const initialState = { // created initial state obj that can have mulrtiple parameters like count:0, abcd:"yyyyy", xyz:"xxxx"
+  count: 0,
+};
+
+// createSlice takes in 3 args, name "counter" is used in state obj creation (state.counter.count)
+// initialState created above gives the state obj basic structure, there can also be nested obj to store multiple kinds of data in state like address has post no, street, colony etx.
+// reducers (incriment:state.count+=1) are the logic to update the state(that we get here by index.js <provider store={store}) 
+// we export the counterSlice.reducer to store and counterSlice.actions to <counter/>
+export const counterSlice = createSlice({ 
+  name: "counter",
+  initialState,
+  reducers: {
+    incriment: (state) => {
+      state.count += 1;
+    },
+    decriment: (state) => {
+      state.count -= 1;
+    },
+    reset: (state) => {
+      state.count = 0;
+    },
+    incrementbyamt: (state, action) => {
+      // action obj frm inp box that carries a "payload" value
+      state.count += action.payload;
+    }
+  }
+});
+
+export const {
+  // named export the reducer actions to Counter.js
+  incriment,
+  decriment,
+  reset,
+  incrementbyamt
+} = counterSlice.actions;
+
+export default counterSlice.reducer;
+// in app/store.js-->>   import counterReducer from "../features/counter/counterSlice"
+
+
+
+
+//counter.js//
+
+import { useSelector, useDispatch } from "react-redux"; // to access store states
+import { incriment, decriment, reset, incrementbyamt } from "./counterSlice";
+// importing named export actions frm counterslice
+import React, { useState } from "react";
+const Counter = () => {
+  const [amnt, setAmnt] = useState(0); // to take in value entered in inp box
+  const addvalue = Number(amnt) || 0;
+  // this makes sure number entered in inp box is number, not nan or return 0
+  const count = useSelector((state) => {
+    // console.log(state)
+    // // console op -->>
+    // // counter: Object
+    // // count: 5
+    return state.counter.count;
+  });
+  const dispatch = useDispatch();
+
+  const resetall = () => {
+    // clbk funct to reset all
+    setAmnt(0);
+    dispatch(reset());
+  };
+
+  return (
+    <div>
+      <h1>{count}</h1>
+
+      <button // dispatching the "incriment" action
+        onClick={() => {
+          // clbk function coz disp(inc()) invoked, like passing a value
+          dispatch(incriment());
+        }}
+      >
+        incriment
+      </button>
+      <button
+        onClick={() => {
+          dispatch(decriment()); // dispatching the "decriment" action
+        }}
+      >
+        decriment
+      </button>
+      <button
+        onClick={() => {
+          dispatch(reset());
+        }}
+      >
+        reset
+      </button>
+      <br />
+      <input
+        type="text"
+        value={amnt} // this binds the amnt state to the input box so reset all will also change value of inp box to 0
+        onChange={(e) => setAmnt(e.target.value)}
+      ></input>
+      <br />
+      <button
+        onClick={() => {
+          dispatch(incrementbyamt(addvalue)); //addvalue is the clbk in which amnt will take in current value of amnt state and convert it to "Number(amnt)||0" and amnt updated via inpbox onchange just above
+        }} // so basically "amnt" is the "payload" used in counterslice as action.payload in incrementbyamt reducer to update the state
+      >
+        increment by amnt
+      </button>
+      <button onClick={resetall}>reset all</button>
+      {/* resetall not invoked () like inc()dec()reset() etc coz its a callback funct that resets all value not dispatched action here directly */}
+    </div>
+  );
+};
+export default Counter; // import <Counter/> in app.js
+
+// import useselector and usedispatch hook to access and update redux store
+
+
+
+//app.js//
+
+import "./styles.css";
+import Counter from "./features/counter/Counter";
+export default function App() {
+  return (
+    <div className="App">
+      rtk test
+      <br />
+      <Counter />
+    </div>
+  );
+}
